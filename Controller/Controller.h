@@ -2,22 +2,22 @@
 // Created by natzgun on 10/06/23.
 //
 
-#ifndef MVC_ARCHITECTURE_SFML_CONTROLADOR_H
-#define MVC_ARCHITECTURE_SFML_CONTROLADOR_H
+#ifndef MVC_ARCHITECTURE_SFML_CONTROLLER_H
+#define MVC_ARCHITECTURE_SFML_CONTROLLER_H
 
-// Archivo Controlador.h
+// Archivo Controller.h
 #pragma once
 #include <SFML/Window/Event.hpp>
-#include "../Model/Modelo.h"
-#include "../View/Vista.h"
+#include "../Model/Model.h"
+#include "../View/View.h"
 
-class Controlador {
+class Controller {
 private:
-  Modelo& modelo; // Referencia al modelo
-  Vista& vista; // Referencia a la vista
+  Model& modelo; // Referencia al modelo
+  View& vista; // Referencia a la vista
 
 public:
-  Controlador(Modelo& modelo, Vista& vista);
+  Controller(Model& modelo, View& vista);
 
   void procesarEvento(const sf::Event& evento); // Método para procesar eventos de SFML
 
@@ -27,4 +27,4 @@ public:
 };
 
 
-#endif //MVC_ARCHITECTURE_SFML_CONTROLADOR_H
+#endif //MVC_ARCHITECTURE_SFML_CONTROLLER_H

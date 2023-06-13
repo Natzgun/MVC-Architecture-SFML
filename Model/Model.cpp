@@ -2,8 +2,8 @@
 // Created by natzgun on 10/06/23.
 //
 
-#include "Modelo.h"
+#include "Model.h"
 
-Modelo::Modelo() {
+Model::Model() {
 
 }

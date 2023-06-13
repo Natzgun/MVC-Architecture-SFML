@@ -2,20 +2,20 @@
 // Created by natzgun on 10/06/23.
 //
 
-#ifndef MVC_ARCHITECTURE_SFML_VISTA_H
-#define MVC_ARCHITECTURE_SFML_VISTA_H
+#ifndef MVC_ARCHITECTURE_SFML_VIEW_H
+#define MVC_ARCHITECTURE_SFML_VIEW_H
 
-// Archivo Vista.h
+// Archivo View.h
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Vista {
+class View {
 private:
   sf::RenderWindow& ventana; // Referencia a la ventana de SFML
   // Otros atributos y datos de la vista
 
 public:
-  Vista(sf::RenderWindow& ventana);
+  View(sf::RenderWindow& ventana);
 
   void dibujar(); // Método para dibujar elementos en la ventana
 
@@ -23,4 +23,4 @@ public:
 };
 
 
-#endif //MVC_ARCHITECTURE_SFML_VISTA_H
+#endif //MVC_ARCHITECTURE_SFML_VIEW_H

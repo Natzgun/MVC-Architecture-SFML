@@ -2,21 +2,21 @@
 // Created by natzgun on 10/06/23.
 //
 
-#ifndef MVC_ARCHITECTURE_SFML_MODELO_H
-#define MVC_ARCHITECTURE_SFML_MODELO_H
+#ifndef MVC_ARCHITECTURE_SFML_MODEL_H
+#define MVC_ARCHITECTURE_SFML_MODEL_H
 
-// Archivo Modelo.h
+// Archivo Model.h
 #pragma once
 
-class Modelo {
+class Model {
 private:
   // Atributos y datos del modelo
 
 public:
-  Modelo();
+  Model();
 
   // Métodos y funciones relacionados con la lógica y los datos del modelo
 };
 
 
-#endif //MVC_ARCHITECTURE_SFML_MODELO_H
+#endif //MVC_ARCHITECTURE_SFML_MODEL_H
