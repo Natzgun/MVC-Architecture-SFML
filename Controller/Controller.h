@@ -1,30 +1,23 @@
 //
-// Created by natzgun on 10/06/23.
+// Created by natzgun on 1/08/23.
 //
 
-#ifndef MVC_ARCHITECTURE_SFML_CONTROLLER_H
-#define MVC_ARCHITECTURE_SFML_CONTROLLER_H
+#ifndef REVOLUTION_GAME_CONTROLLER_H
+#define REVOLUTION_GAME_CONTROLLER_H
 
-// Archivo Controller.h
-#pragma once
-#include <SFML/Window/Event.hpp>
-#include "../Model/Model.h"
+
 #include "../View/View.h"
+#include "../Model/Model.h"
 
 class Controller {
 private:
-  Model& modelo; // Referencia al modelo
-  View& vista; // Referencia a la vista
-
+  View* vista;
+  Model* modelo;
 public:
-  Controller(Model& modelo, View& vista);
-
-  void procesarEvento(const sf::Event& evento); // Método para procesar eventos de SFML
-
-  void actualizar(); // Método para actualizar el modelo y la vista en cada iteración
-
-  // Otros métodos y funciones relacionados con la interacción y el control
+  Controller();
+  void ejecutar();
+  ~Controller();
 };
 
 
-#endif //MVC_ARCHITECTURE_SFML_CONTROLLER_H
+#endif //REVOLUTION_GAME_CONTROLLER_H

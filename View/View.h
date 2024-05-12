@@ -1,26 +1,29 @@
-//
-// Created by natzgun on 10/06/23.
-//
-
-#ifndef MVC_ARCHITECTURE_SFML_VIEW_H
-#define MVC_ARCHITECTURE_SFML_VIEW_H
+#ifndef REVOLUTION_GAME_VIEW_H
+#define REVOLUTION_GAME_VIEW_H
 
 // Archivo View.h
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
-class View {
-private:
-  sf::RenderWindow& ventana; // Referencia a la ventana de SFML
-  // Otros atributos y datos de la vista
+  class View {
+  private:
+    sf::RenderWindow window;
+    sf::Event evento;
+    int fps;
+  public:
+    View();
+    sf::Event& getEvent();
+    bool getVentanaPollEvent();
+    void getCloseWindow();
+    bool getKeyboard_W();
+    bool getKeyboard_A();
+    bool getKeyboard_S();
+    bool getKeyboard_D();
+    void drawEsfera(int,int,int);
 
-public:
-  View(sf::RenderWindow& ventana);
+    sf::RenderWindow& getWindowMain();
 
-  void dibujar(); // Método para dibujar elementos en la ventana
+  };
 
-  // Otros métodos y funciones relacionados con la representación visual
-};
-
-
-#endif //MVC_ARCHITECTURE_SFML_VIEW_H
+#endif //REVOLUTION_GAME_VIEW_H

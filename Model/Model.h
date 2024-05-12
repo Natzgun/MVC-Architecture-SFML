@@ -1,22 +1,29 @@
 //
-// Created by natzgun on 10/06/23.
+// Created by natzgun on 1/08/23.
 //
 
-#ifndef MVC_ARCHITECTURE_SFML_MODEL_H
-#define MVC_ARCHITECTURE_SFML_MODEL_H
+#ifndef REVOLUTION_GAME_MODEL_H
+#define REVOLUTION_GAME_MODEL_H
 
-// Archivo Model.h
-#pragma once
 
 class Model {
 private:
-  // Atributos y datos del modelo
-
+  int pos_x, pos_y;
+  bool w,a,s,d;
+  long cont_w, cont_a, cont_s, cont_d;
 public:
   Model();
+  int& getPosX();
+  int& getPosY();
+  void setPosX(int);
+  void setPosY(int);
 
-  // Métodos y funciones relacionados con la lógica y los datos del modelo
+  void listen_W(bool);
+  void listen_A(bool);
+  void listen_S(bool);
+  void listen_D(bool);
+  void reset();
+  ~Model();
 };
 
-
-#endif //MVC_ARCHITECTURE_SFML_MODEL_H
+#endif //REVOLUTION_GAME_MODEL_H
