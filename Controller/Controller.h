@@ -13,6 +13,10 @@ class Controller {
 private:
   View* vista;
   Model* modelo;
+
+  void procesarEntrada();
+  void actualizar();
+  void dibujar();
 public:
   Controller();
   void ejecutar();
