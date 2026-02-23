@@ -1,8 +1,8 @@
 #include "Controller.h"
 
 Controller::Controller() {
-  vista = new View();
-  modelo = new Model();
+  vista = std::make_unique<View>();
+  modelo = std::make_unique<Model>();
 }
 
 void Controller::ejecutar() {
@@ -36,7 +36,4 @@ void Controller::dibujar() {
   vista->getWindowMain().display();
 }
 
-Controller::~Controller() {
-  delete vista;
-  delete modelo;
-}
+Controller::~Controller() = default;

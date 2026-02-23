@@ -8,11 +8,12 @@
 
 #include "../View/View.h"
 #include "../Model/Model.h"
+#include <memory>
 
 class Controller {
 private:
-  View* vista;
-  Model* modelo;
+  std::unique_ptr<View> vista;
+  std::unique_ptr<Model> modelo;
 
   void procesarEntrada();
   void actualizar();
