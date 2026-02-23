@@ -13,8 +13,8 @@ private:
   long cont_w, cont_a, cont_s, cont_d;
 public:
   Model();
-  int& getPosX();
-  int& getPosY();
+  int getPosX();
+  int getPosY();
   void setPosX(int);
   void setPosY(int);
 

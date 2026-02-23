@@ -20,10 +20,10 @@ void Controller::procesarEntrada() {
     }
   }
 
-  modelo->listen_W(vista->getKeyboard_W());
-  modelo->listen_A(vista->getKeyboard_A());
-  modelo->listen_S(vista->getKeyboard_S());
-  modelo->listen_D(vista->getKeyboard_D());
+  modelo->listen_W(sf::Keyboard::isKeyPressed(sf::Keyboard::W));
+  modelo->listen_A(sf::Keyboard::isKeyPressed(sf::Keyboard::A));
+  modelo->listen_S(sf::Keyboard::isKeyPressed(sf::Keyboard::S));
+  modelo->listen_D(sf::Keyboard::isKeyPressed(sf::Keyboard::D));
 }
 
 void Controller::actualizar() {

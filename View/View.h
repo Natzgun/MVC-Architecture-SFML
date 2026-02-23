@@ -16,10 +16,6 @@
     sf::Event& getEvent();
     bool getVentanaPollEvent();
     void getCloseWindow();
-    bool getKeyboard_W();
-    bool getKeyboard_A();
-    bool getKeyboard_S();
-    bool getKeyboard_D();
     void drawEsfera(int,int,int);
 
     sf::RenderWindow& getWindowMain();

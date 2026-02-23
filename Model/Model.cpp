@@ -65,11 +65,11 @@ Model::~Model() {
 
 }
 
-int& Model::getPosX() {
+int Model::getPosX() {
   return this->pos_x;
 }
 
-int& Model::getPosY() {
+int Model::getPosY() {
   return this->pos_y;
 }
 
