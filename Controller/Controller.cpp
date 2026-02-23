@@ -27,16 +27,7 @@ void Controller::procesarEntrada() {
 }
 
 void Controller::actualizar() {
-  int y = modelo->getPosY();
-  int x = modelo->getPosX();
-
-  if (vista->getKeyboard_W()) y -= 5;
-  if (vista->getKeyboard_A()) x -= 5;
-  if (vista->getKeyboard_S()) y += 5;
-  if (vista->getKeyboard_D()) x += 5;
-
-  modelo->setPosX(x);
-  modelo->setPosY(y);
+  modelo->update();
 }
 
 void Controller::dibujar() {

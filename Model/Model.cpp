@@ -54,6 +54,13 @@ void Model::reset() {
   this->d = false;
 }
 
+void Model::update() {
+  if (w) pos_y -= 5;
+  if (a) pos_x -= 5;
+  if (s) pos_y += 5;
+  if (d) pos_x += 5;
+}
+
 Model::~Model() {
 
 }

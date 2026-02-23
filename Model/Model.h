@@ -23,6 +23,7 @@ public:
   void listen_S(bool);
   void listen_D(bool);
   void reset();
+  void update();
   ~Model();
 };
 
