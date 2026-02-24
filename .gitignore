@@ -31,3 +31,14 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 compile_commands.json
+
+# Assets directory (keep structure, ignore binary assets in version control)
+# Uncomment the line below if you want to track assets in git:
+# !assets/**
+assets/*.png
+assets/*.jpg
+assets/*.wav
+assets/*.ogg
+assets/*.mp3
+assets/*.ttf
+assets/*.otf

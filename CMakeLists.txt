@@ -13,16 +13,19 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-# --- Engine core sources ---
+# --- Engine module sources ---
 set(ENGINE_SOURCES
-    src/Core/Game.cpp
-    src/States/StateMachine.cpp
+    src/Engine/Core/Application.cpp
+    src/Engine/Graphics/Renderer.cpp
+    src/Engine/Input/InputManager.cpp
+    src/Engine/Audio/AudioManager.cpp
+    src/Engine/Scene/SceneManager.cpp
 )
 
 # --- Example sources (replace these with your own game files) ---
 set(GAME_SOURCES
     src/main.cpp
-    src/Example/DemoState.cpp
+    src/Example/DemoScene.cpp
 )
 
 add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${GAME_SOURCES})
