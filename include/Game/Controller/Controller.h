@@ -7,6 +7,7 @@
 
 #include "Game/View/View.h"
 #include "Game/Model/Model.h"
+#include "Core/Game.hpp"
 #include <memory>
 
 class Controller {
@@ -14,14 +15,15 @@ private:
   std::unique_ptr<View> vista;
   std::unique_ptr<Model> modelo;
 
+public:
+  explicit Controller(Engine::GameDataRef data);
+
+  // Expuestos temporalmente para que el GameState pueda llamarlos.
   void procesarEntrada();
   void actualizar();
   void dibujar();
-public:
-  Controller();
-  void ejecutar();
-  ~Controller();
-};
 
+  ~Controller() = default;
+};
 
 #endif //REVOLUTION_GAME_CONTROLLER_H

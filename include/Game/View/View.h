@@ -1,25 +1,17 @@
 #ifndef REVOLUTION_GAME_VIEW_H
 #define REVOLUTION_GAME_VIEW_H
 
-// Archivo View.h
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Core/Game.hpp"
 
-  class View {
-  private:
-    sf::RenderWindow window;
-    sf::Event evento;
-    int fps;
-  public:
-    View();
-    sf::Event& getEvent();
-    bool getVentanaPollEvent();
-    void getCloseWindow();
-    void drawEsfera(int,int,int);
-
-    sf::RenderWindow& getWindowMain();
-
-  };
+class View {
+private:
+  Engine::GameDataRef m_data;
+public:
+  explicit View(Engine::GameDataRef data);
+  void drawEsfera(int,int,int);
+};
 
 #endif //REVOLUTION_GAME_VIEW_H

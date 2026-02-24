@@ -1,32 +1,13 @@
 #include "Game/View/View.h"
 
-View::View() {
-  int fps = 60;
-  window.create(sf::VideoMode(1280, 720), "Examen MVC");
-  window.setFramerateLimit(fps);
+View::View(Engine::GameDataRef data) : m_data(data) {
+  // Ya no inicializa la ventana. Es administrada por el Engine.
 }
-
 
 void View::drawEsfera(int radio, int x, int y) {
-  sf::CircleShape sphere(50.f);
-  sphere.move(x,y);
+  sf::CircleShape sphere(static_cast<float>(radio));
+  sphere.setPosition(static_cast<float>(x), static_cast<float>(y));
   sphere.setFillColor(sf::Color::White);
-  window.draw(sphere);
-}
-
-sf::Event& View::getEvent() {
-  return evento;
-}
-
-bool View::getVentanaPollEvent() {
-  return window.pollEvent(getEvent());
-}
-
-void View::getCloseWindow() {
-  window.close();
-}
-
-sf::RenderWindow& View::getWindowMain() {
-  return window;
+  m_data->window->draw(sphere);
 }
 
