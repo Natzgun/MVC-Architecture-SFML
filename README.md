@@ -1,39 +1,86 @@
-# Proyecto SFML
+# SFML Professional Game Architecture (MVC + State Machine)
 
-Este es un proyecto de ejemplo que utiliza la biblioteca SFML para implementar un patrón de diseño Modelo-Vista-Controlador (MVC). El proyecto está organizado en tres carpetas principales: `modelo`, `vista` y `controlador`.
+Este repositorio proporciona una plantilla base profesional y escalable para el desarrollo de videojuegos en C++ utilizando la biblioteca SFML. La arquitectura implementa patrones de diseño avanzados para garantizar el bajo acoplamiento, la mantenibilidad y la eficiencia en el rendimiento.
 
-## Modelo
+## 🏗️ Arquitectura del Sistema
 
-La carpeta `modelo` contiene las clases y estructuras que representan los datos y la lógica del negocio. Aquí es donde se definen las entidades, las reglas de negocio y cualquier otra funcionalidad relacionada con el modelo de datos. Puedes agregar tus archivos fuente relacionados con el modelo en esta carpeta.
+El proyecto está estructurado siguiendo principios de ingeniería de software modernos, dividiéndose en un núcleo de motor (Core) y una implementación de juego (Game).
 
-## Vista
+### 1. Motor Base (Core)
+*   **Game Engine**: Gestiona el ciclo de vida principal mediante un **Fixed Time Step** (60 FPS fijos para lógica), garantizando que la física y el comportamiento del juego sean consistentes independientemente de la potencia del hardware.
+*   **State Machine**: Implementa el patrón *State* para gestionar diferentes escenas (Menú, Juego, Pausa, Game Over) de forma independiente y transicional.
+*   **ResourceManager**: Un gestor genérico basado en plantillas (`templates`) para la carga y caché de recursos (`sf::Texture`, `sf::Font`, `sf::SoundBuffer`). Optimiza el uso de memoria evitando cargas duplicadas desde el disco.
 
-La carpeta `vista` está destinada a contener todo lo relacionado con la interfaz de usuario y la presentación de los datos. Aquí es donde puedes crear ventanas, renderizar gráficos y manejar la interacción del usuario. Puedes agregar tus archivos fuente relacionados con la vista en esta carpeta.
+### 2. Capa de Aplicación (MVC + SOLID)
+El juego utiliza el patrón **Model-View-Controller (MVC)** bajo principios **SOLID**:
+*   **Model**: Contiene el estado puro y la lógica de negocio. Es independiente de la representación visual.
+*   **View**: Interfaz pasiva encargada exclusivamente del renderizado. Implementa la interfaz `IView` para permitir la inversión de dependencias.
+*   **Controller**: Actúa como mediador, procesando la entrada y coordinando la actualización del modelo y la vista.
 
-## Controlador
+## 📂 Estructura del Proyecto
 
-La carpeta `controlador` contiene las clases y funciones responsables de coordinar la interacción entre el modelo y la vista. Aquí es donde se definen las acciones y eventos que manipulan los datos del modelo y actualizan la interfaz de usuario. Puedes agregar tus archivos fuente relacionados con el controlador en esta carpeta.
+```text
+├── include/
+│   ├── Core/           # Componentes del motor (Game, ResourceManager)
+│   ├── States/         # Gestión de escenas y máquina de estados
+│   └── Game/           # Entidades del juego (Model, View, Controller, Interfaces)
+├── src/
+│   ├── Core/           # Implementación del motor
+│   ├── States/         # Implementación de la lógica de estados
+│   ├── Game/           # Implementación del MVC y lógica de entidades
+│   └── main.cpp        # Punto de entrada y configuración inicial
+├── CMakeLists.txt      # Sistema de construcción automatizado
+└── assets/             # Directorio para recursos (imágenes, fuentes, sonidos)
+```
 
-## Ejecución
+## 🚀 Guía de Inicio Rápido
 
-Para compilar y ejecutar el proyecto, asegúrate de tener instalada la biblioteca SFML en tu sistema. Puedes encontrar instrucciones de instalación en el sitio web oficial de SFML.
+### Requisitos Previos
+*   Compilador con soporte C++17 o superior.
+*   [SFML 2.5+](https://www.sfml-dev.org/) instalado en el sistema.
+*   CMake 3.25+.
 
-Una vez que hayas instalado SFML, puedes compilar los archivos fuente del proyecto y enlazarlos con las bibliotecas de SFML. Asegúrate de seguir las instrucciones de compilación adecuadas para tu sistema operativo y entorno de desarrollo.
+### Compilación
+```bash
+mkdir build && cd build
+cmake ..
+make
+./Revolution_Game
+```
 
-Después de compilar exitosamente, podrás ejecutar el programa resultante y ver la aplicación en funcionamiento.
+## 🛠️ Cómo Extender el Proyecto
 
-## Contribución
+### 1. Crear una nueva Escena (Estado)
+Para añadir una pantalla (ej. `MenuState`), hereda de `Engine::State`:
+```cpp
+class MenuState : public Engine::State {
+    void init() override;
+    void handleInput() override;
+    void update(float dt) override;
+    void draw(float dt) override;
+};
+```
 
-Si deseas contribuir a este proyecto, ¡serás bienvenido! Puedes hacerlo a través de las siguientes etapas:
+### 2. Uso del ResourceManager
+Accede a los recursos de forma eficiente a través del contexto global del juego:
+```cpp
+// Cargar
+m_data->textures.load("player_id", "assets/player.png");
+// Usar
+sf::Sprite sprite(m_data->textures.get("player_id"));
+```
 
-1. Realiza un fork del repositorio.
-2. Crea una rama con la nueva funcionalidad: `git checkout -b nueva-funcionalidad`.
-3. Realiza los cambios y realiza los commits: `git commit -am 'Agrega una nueva funcionalidad'`.
-4. Envía los cambios a la rama: `git push origin nueva-funcionalidad`.
-5. Envía una solicitud de extracción a la rama `master` en el repositorio original.
+### 3. Implementar nuevas Entidades
+Sigue el patrón de **Inyección de Dependencias** utilizado en el `Controller` actual:
+```cpp
+// El controlador no crea sus dependencias, las recibe (DIP)
+Controller(Model* m, IView* v);
+```
 
-Agradecemos de antemano tus contribuciones.
+## 📜 Principios de Diseño Aplicados
+*   **Single Responsibility Principle (SRP)**: Cada clase tiene una única razón para cambiar.
+*   **Dependency Inversion Principle (DIP)**: El controlador depende de abstracciones (`IView`), no de implementaciones concretas de SFML.
+*   **Encapsulamiento**: Los datos internos de los modelos están protegidos contra modificaciones externas no controladas.
 
-## Licencia
-
-Este proyecto se encuentra bajo la Licencia MIT. Puedes consultar el archivo [LICENSE](LICENSE) para más detalles.
+---
+Desarrollado como una base sólida para proyectos de videojuegos 2D profesionales.
