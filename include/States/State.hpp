@@ -1,28 +1,39 @@
-#ifndef REVOLUTION_GAME_STATE_HPP
-#define REVOLUTION_GAME_STATE_HPP
+#pragma once
 
 namespace Engine {
-    // Interfaz base para cualquier pantalla o escena del juego.
-    class State {
-    public:
-        virtual ~State() = default;
 
-        // Se llama al inicializar el estado (cargar recursos iniciales)
-        virtual void init() = 0;
+/// Abstract base class for all game states (scenes).
+/// Each state represents a distinct screen or phase of the game
+/// (e.g., MainMenu, Gameplay, Pause, GameOver).
+///
+/// Lifecycle: init() -> [handleInput() -> update() -> draw()]* -> ~State()
+///
+/// States are managed by the StateMachine via a stack, enabling
+/// push/pop transitions (e.g., pausing overlays).
+class State {
+public:
+    virtual ~State() = default;
 
-        // Gestión de la entrada de usuario
-        virtual void handleInput() = 0;
+    /// Called once when the state is first pushed onto the stack.
+    /// Use this to load resources and initialize entities.
+    virtual void init() = 0;
 
-        // Lógica de juego por frame (dt = delta time en segundos)
-        virtual void update(float dt) = 0;
+    /// Process window events and real-time input each frame.
+    virtual void handleInput() = 0;
 
-        // Renderizado del frame (dt opcional para interpolaciones)
-        virtual void draw(float dt) = 0;
+    /// Update game logic at a fixed timestep.
+    /// @param dt Fixed delta time in seconds (e.g., 1/60).
+    virtual void update(float dt) = 0;
 
-        // Si el estado es pausado (ej. abrimos un menú superpuesto)
-        virtual void pause() {}
-        virtual void resume() {}
-    };
-}
+    /// Render the current frame.
+    /// @param interpolation Value in [0,1] for smoothing between physics steps.
+    virtual void draw(float interpolation) = 0;
 
-#endif //REVOLUTION_GAME_STATE_HPP
+    /// Called when another state is pushed on top of this one.
+    virtual void pause() {}
+
+    /// Called when the state above this one is popped.
+    virtual void resume() {}
+};
+
+} // namespace Engine

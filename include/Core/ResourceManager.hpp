@@ -1,5 +1,4 @@
-#ifndef REVOLUTION_GAME_RESOURCEMANAGER_HPP
-#define REVOLUTION_GAME_RESOURCEMANAGER_HPP
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -7,46 +6,84 @@
 #include <string>
 #include <memory>
 #include <stdexcept>
-#include <iostream>
+#include <filesystem>
 
+namespace Engine {
+
+/// Generic resource cache that loads, stores, and retrieves SFML resources.
+///
+/// Works with any SFML resource type that supports `loadFromFile()`
+/// (sf::Texture, sf::Font, sf::SoundBuffer, etc.).
+///
+/// Resources are stored as unique_ptr and accessed by a string identifier.
+/// Loading the same ID twice is a no-op (returns silently).
+///
+/// @tparam Resource An SFML resource type with a `loadFromFile` method.
 template <typename Resource>
 class ResourceManager {
-private:
-    std::unordered_map<std::string, std::unique_ptr<Resource>> m_resources;
-
 public:
     ResourceManager() = default;
     ~ResourceManager() = default;
 
-    // Carga un recurso desde un archivo y lo asocia a un nombre (id)
-    void load(const std::string& id, const std::string& filename) {
-        if (m_resources.find(id) != m_resources.end()) {
-            std::cerr << "Advertencia: El recurso '" << id << "' ya estaba cargado.
-";
+    // Non-copyable, movable
+    ResourceManager(const ResourceManager&) = delete;
+    ResourceManager& operator=(const ResourceManager&) = delete;
+    ResourceManager(ResourceManager&&) = default;
+    ResourceManager& operator=(ResourceManager&&) = default;
+
+    /// Load a resource from a file and associate it with the given ID.
+    /// If the ID already exists, this call is ignored.
+    /// @param id       Unique identifier for the resource.
+    /// @param filename Path to the resource file.
+    /// @throws std::runtime_error if the file cannot be loaded.
+    void load(const std::string& id, const std::filesystem::path& filename) {
+        if (m_resources.contains(id)) {
             return;
         }
 
         auto resource = std::make_unique<Resource>();
         if (!resource->loadFromFile(filename)) {
-            throw std::runtime_error("ResourceManager: Error al cargar " + filename);
+            throw std::runtime_error(
+                "ResourceManager: Failed to load '" + filename.string() + "'");
         }
 
-        m_resources.insert(std::make_pair(id, std::move(resource)));
+        m_resources.emplace(id, std::move(resource));
     }
 
-    // Obtiene una referencia al recurso cargado
-    Resource& get(const std::string& id) {
-        auto found = m_resources.find(id);
-        if (found == m_resources.end()) {
-            throw std::runtime_error("ResourceManager: Recurso no encontrado -> " + id);
+    /// Retrieve a loaded resource by its ID.
+    /// @param id The identifier used when loading.
+    /// @throws std::runtime_error if the resource is not found.
+    [[nodiscard]] Resource& get(const std::string& id) {
+        auto it = m_resources.find(id);
+        if (it == m_resources.end()) {
+            throw std::runtime_error(
+                "ResourceManager: Resource not found -> " + id);
         }
-        return *found->second;
+        return *it->second;
     }
+
+    /// Check whether a resource with the given ID is loaded.
+    [[nodiscard]] bool has(const std::string& id) const {
+        return m_resources.contains(id);
+    }
+
+    /// Remove a specific resource from the cache.
+    void unload(const std::string& id) {
+        m_resources.erase(id);
+    }
+
+    /// Remove all resources from the cache.
+    void clear() {
+        m_resources.clear();
+    }
+
+private:
+    std::unordered_map<std::string, std::unique_ptr<Resource>> m_resources;
 };
 
-// Typedefs útiles para no escribir todo el template
-using TextureManager = ResourceManager<sf::Texture>;
-using FontManager    = ResourceManager<sf::Font>;
+// Convenient type aliases for common SFML resource types.
+using TextureManager     = ResourceManager<sf::Texture>;
+using FontManager        = ResourceManager<sf::Font>;
 using SoundBufferManager = ResourceManager<sf::SoundBuffer>;
 
-#endif //REVOLUTION_GAME_RESOURCEMANAGER_HPP
+} // namespace Engine

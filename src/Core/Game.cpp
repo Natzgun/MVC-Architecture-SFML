@@ -1,50 +1,48 @@
 #include "Core/Game.hpp"
-#include "States/State.hpp"
 
 namespace Engine {
-    Game::Game(int width, int height, const std::string& title) {
-        m_data->window = std::make_unique<sf::RenderWindow>(sf::VideoMode(width, height), title);
-        m_data->window->setFramerateLimit(60);
-        m_data->machine = std::make_unique<StateMachine>();
-    }
 
-    void Game::run() {
-        float newTime, frameTime, interpolation;
-        float currentTime = m_clock.getElapsedTime().asSeconds();
-        float accumulator = 0.0f;
+Game::Game(unsigned int width, unsigned int height, const std::string& title) {
+    m_data->window = std::make_unique<sf::RenderWindow>(
+        sf::VideoMode({width, height}), title);
+    m_data->window->setFramerateLimit(60);
+    m_data->machine = std::make_unique<StateMachine>();
+}
 
-        // Bucle Principal (Fixed Time Step - Estándar para videojuegos)
-        while (m_data->window->isOpen() && !m_data->machine->empty()) {
-            
-            // 1. Aplicar cambios de estado pendientes (ej. pasar del Menu a Juego)
-            m_data->machine->processStateChanges();
+void Game::run() {
+    float currentTime = m_clock.getElapsedTime().asSeconds();
+    float accumulator = 0.0f;
 
-            // Lógica de Delta Time Fijo
-            newTime = m_clock.getElapsedTime().asSeconds();
-            frameTime = newTime - currentTime;
+    while (m_data->window->isOpen() && !m_data->machine->empty()) {
+        // 1. Apply pending state changes (e.g., menu -> gameplay)
+        m_data->machine->processStateChanges();
 
-            // Evitar problemas de física si el frame se retrasa mucho ("Spiraling of Death")
-            if (frameTime > 0.25f) frameTime = 0.25f;
+        // Fixed timestep accumulation
+        float newTime = m_clock.getElapsedTime().asSeconds();
+        float frameTime = newTime - currentTime;
 
-            currentTime = newTime;
-            accumulator += frameTime;
+        // Clamp to avoid spiral of death
+        if (frameTime > 0.25f)
+            frameTime = 0.25f;
 
-            // 2. Procesar Entrada (Gestión de eventos y teclado)
-            m_data->machine->getActiveState()->handleInput();
+        currentTime = newTime;
+        accumulator += frameTime;
 
-            // 3. Actualizar Lógica a ritmo constante
-            while (accumulator >= dt) {
-                m_data->machine->getActiveState()->update(dt);
-                accumulator -= dt;
-            }
+        // 2. Handle input (events + real-time)
+        m_data->machine->getActiveState()->handleInput();
 
-            // Interpolación para un dibujo más suave
-            interpolation = accumulator / dt;
-
-            // 4. Dibujar Pantalla
-            m_data->window->clear();
-            m_data->machine->getActiveState()->draw(interpolation);
-            m_data->window->display();
+        // 3. Fixed-rate logic updates
+        while (accumulator >= dt) {
+            m_data->machine->getActiveState()->update(dt);
+            accumulator -= dt;
         }
+
+        // 4. Render with interpolation
+        float interpolation = accumulator / dt;
+        m_data->window->clear();
+        m_data->machine->getActiveState()->draw(interpolation);
+        m_data->window->display();
     }
 }
+
+} // namespace Engine

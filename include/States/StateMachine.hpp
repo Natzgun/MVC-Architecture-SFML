@@ -1,33 +1,51 @@
-#ifndef REVOLUTION_GAME_STATEMACHINE_HPP
-#define REVOLUTION_GAME_STATEMACHINE_HPP
+#pragma once
 
 #include "State.hpp"
 #include <memory>
 #include <stack>
 
 namespace Engine {
-    using StateRef = std::unique_ptr<State>;
 
-    class StateMachine {
-    public:
-        StateMachine() = default;
-        ~StateMachine() = default;
+using StateRef = std::unique_ptr<State>;
 
-        void addState(StateRef newState, bool isReplacing = true);
-        void removeState();
-        void processStateChanges(); // Aplica los cambios de estado pendientes
+/// Stack-based state machine for managing game scenes.
+///
+/// Supports three operations:
+/// - pushState:   Add a new state on top (optionally replacing the current one).
+/// - popState:    Remove the top state and resume the one below.
+/// - processStateChanges: Apply pending operations (called once per frame).
+///
+/// This deferred processing avoids modifying the stack mid-frame.
+class StateMachine {
+public:
+    StateMachine() = default;
+    ~StateMachine() = default;
 
-        StateRef& getActiveState(); // Obtener el estado actual
-        bool empty() const; // ¿Hay estados en la pila?
+    /// Schedule a new state to be pushed next frame.
+    /// @param newState  The state to push.
+    /// @param isReplacing If true, the current top state is removed first.
+    void pushState(StateRef newState, bool isReplacing = true);
 
-    private:
-        std::stack<StateRef> m_states;
-        StateRef m_newState;
+    /// Schedule the removal of the current top state.
+    void popState();
 
-        bool m_isRemoving = false;
-        bool m_isAdding = false;
-        bool m_isReplacing = false;
-    };
-}
+    /// Apply any pending push/pop operations. Call once per frame before input.
+    void processStateChanges();
 
-#endif //REVOLUTION_GAME_STATEMACHINE_HPP
+    /// Get a reference to the currently active state.
+    /// @pre The stack must not be empty.
+    StateRef& getActiveState();
+
+    /// Check whether the state stack is empty.
+    [[nodiscard]] bool empty() const;
+
+private:
+    std::stack<StateRef> m_states;
+    StateRef m_newState;
+
+    bool m_isRemoving  = false;
+    bool m_isAdding    = false;
+    bool m_isReplacing = false;
+};
+
+} // namespace Engine
