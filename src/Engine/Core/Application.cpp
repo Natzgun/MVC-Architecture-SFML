@@ -13,6 +13,9 @@ void Application::run() {
     float currentTime = m_clock.getElapsedTime().asSeconds();
     float accumulator = 0.0f;
 
+    // Process any scenes pushed before run() was called
+    m_scenes.processSceneChanges();
+
     while (m_renderer.isOpen() && !m_scenes.empty()) {
         // 1. Apply pending scene changes (e.g., menu -> gameplay)
         m_scenes.processSceneChanges();
