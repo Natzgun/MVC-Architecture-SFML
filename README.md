@@ -1,110 +1,182 @@
-# SFML Engine Architecture - Professional Game Template
+# SFML 3 Game Template
 
-Este repositorio proporciona una infraestructura técnica avanzada para el desarrollo de videojuegos 2D utilizando C++17 y la biblioteca SFML. La arquitectura ha sido diseñada bajo estándares de ingeniería de software profesionales, integrando patrones de diseño que aseguran un alto rendimiento, mantenibilidad y desacoplamiento.
+A scalable, ready-to-use C++17 game engine template built on **SFML 3.0**. Clone this repository and start building your own 2D game immediately.
 
-## 1. Arquitectura del Sistema
+## Features
 
-El motor se divide en dos capas principales: el Núcleo (Core) y la Capa de Aplicación (Game).
+- **Fixed-timestep game loop** with interpolation for smooth rendering.
+- **Stack-based state machine** for scene management (menus, gameplay, pause, etc.).
+- **Generic resource manager** (textures, fonts, sounds) with caching.
+- **SFML 3.0 API** -- uses the modern event system (`std::optional`, `pollEvent`, scoped enums).
+- **SOLID principles** -- small interfaces, dependency inversion, single responsibility per class.
+- **CMake + FetchContent** -- no manual SFML installation required.
 
-### 1.1 Motor Base (Core)
+## Project Structure
 
-#### 1.1.1 Ciclo de Vida (Game Loop)
-Se implementa un bucle de tiempo fijo (Fixed Time Step). Esta técnica es estándar en la industria para garantizar que la lógica del juego y la física se ejecuten a una velocidad constante, evitando inconsistencias causadas por variaciones en la tasa de refresco (FPS).
+```
+.
+├── include/                    # Headers (.hpp)
+│   ├── Core/
+│   │   ├── Game.hpp            # Engine core: window, game loop, shared context
+│   │   └── ResourceManager.hpp # Template-based asset cache
+│   ├── States/
+│   │   ├── State.hpp           # Abstract base class for all states
+│   │   └── StateMachine.hpp    # Stack-based state manager
+│   └── Example/
+│       └── DemoState.hpp       # Example state (replace with your own)
+├── src/                        # Implementations (.cpp)
+│   ├── Core/
+│   │   └── Game.cpp
+│   ├── States/
+│   │   └── StateMachine.cpp
+│   ├── Example/
+│   │   └── DemoState.cpp       # Example state (replace with your own)
+│   └── main.cpp                # Entry point
+├── assets/                     # Game assets (images, audio, fonts)
+├── CMakeLists.txt
+├── LICENSE
+└── README.md
+```
+
+## Quick Start
+
+### Prerequisites
+
+- C++17 compiler (GCC 9+, Clang 9+, MSVC 2019+)
+- CMake 3.28+
+- On Linux, install SFML system dependencies:
+  ```bash
+  # Debian / Ubuntu
+  sudo apt update && sudo apt install \
+      libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
+      libfreetype-dev libflac-dev libvorbis-dev \
+      libgl1-mesa-dev libegl1-mesa-dev
+  ```
+
+### Build & Run
+
+```bash
+cmake -B build
+cmake --build build
+./build/bin/SFMLGameTemplate
+```
+
+## How to Use This Template
+
+### 1. Create Your First State
+
+A **State** is a self-contained game scene (menu, level, game over, etc.). Create a new class that inherits from `Engine::State`:
 
 ```cpp
-void Game::run() {
-    float currentTime = m_clock.getElapsedTime().asSeconds();
-    float accumulator = 0.0f;
+// include/MyGame/PlayState.hpp
+#pragma once
+#include "States/State.hpp"
+#include "Core/Game.hpp"
 
-    while (m_data->window->isOpen()) {
-        float newTime = m_clock.getElapsedTime().asSeconds();
-        float frameTime = newTime - currentTime;
-        if (frameTime > 0.25f) frameTime = 0.25f;
-        currentTime = newTime;
-        accumulator += frameTime;
+class PlayState : public Engine::State {
+public:
+    explicit PlayState(Engine::GameDataRef data) : m_data(std::move(data)) {}
 
-        while (accumulator >= dt) {
-            m_data->machine->getActiveState()->update(dt);
-            accumulator -= dt;
-        }
-        // Renderizado
-        m_data->window->clear();
-        m_data->machine->getActiveState()->draw(accumulator / dt);
-        m_data->window->display();
+    void init() override {
+        // Load resources, create entities
     }
+
+    void handleInput() override {
+        while (const auto event = m_data->window->pollEvent()) {
+            if (event->is<sf::Event::Closed>())
+                m_data->window->close();
+        }
+    }
+
+    void update(float dt) override {
+        // Game logic here
+    }
+
+    void draw(float interpolation) override {
+        // Render here
+        m_data->window->draw(mySprite);
+    }
+
+private:
+    Engine::GameDataRef m_data;
+};
+```
+
+### 2. Register It in main.cpp
+
+```cpp
+#include "Core/Game.hpp"
+#include "MyGame/PlayState.hpp"
+
+int main() {
+    Engine::Game game(1280, 720, "My Game");
+    game.getContext()->machine->pushState(
+        std::make_unique<PlayState>(game.getContext()));
+    game.run();
 }
 ```
 
-#### 1.1.2 Gestión de Estados (State Machine)
-La navegación entre escenas (Menú, Nivel, Pausa) se administra mediante una máquina de estados basada en una pila (Stack). Esto permite la superposición de contextos y una transición fluida entre pantallas sin pérdida de estado.
+### 3. Switch Between States
 
-#### 1.1.3 Gestión de Recursos (ResourceManager)
-Utiliza un sistema de caché basado en plantillas para centralizar la carga de activos (texturas, fuentes y audio), reduciendo el consumo de memoria y optimizando el acceso a los datos.
-
-### 1.2 Implementación MVC y SOLID
-
-Dentro de cada estado, las entidades siguen el patrón Model-View-Controller, reforzado por el principio de Inversión de Dependencias (DIP).
-
-*   **Model**: Gestiona los datos y la lógica interna de la entidad.
-*   **View**: Implementa la interfaz `IView` para renderizar el estado del modelo.
-*   **Controller**: Recibe dependencias inyectadas para coordinar el flujo entre modelo y vista.
+From inside any state you can push, replace, or pop states:
 
 ```cpp
-// Ejemplo de Inyección de Dependencias en el Controlador
-Controller::Controller(Model* m, Game::IView* v) : modelo(m), vista(v) {}
+// Push a new state on top (current state is paused)
+m_data->machine->pushState(std::make_unique<PauseState>(m_data), false);
+
+// Replace the current state entirely
+m_data->machine->pushState(std::make_unique<GameOverState>(m_data), true);
+
+// Pop the current state (resumes the one below)
+m_data->machine->popState();
 ```
 
-## 2. Estructura del Proyecto
+### 4. Load Resources
 
-La organización de directorios sigue el estándar de la industria para separar las declaraciones de las implementaciones:
+Use the built-in resource managers available through `GameData`:
 
-```text
-├── include/            # Cabeceras (.h / .hpp)
-│   ├── Core/           # Componentes base del motor
-│   ├── States/         # Máquina de estados y estados globales
-│   └── Game/           # Lógica de entidades (MVC e Interfaces)
-├── src/                # Implementaciones (.cpp)
-│   ├── Core/           # Lógica del motor y Game Loop
-│   ├── States/         # Lógica de transiciones de escenas
-│   ├── Game/           # Lógica de controladores, modelos y vistas
-│   └── main.cpp        # Punto de entrada de la aplicación
-├── assets/             # Recursos multimedia (imágenes, audio, fuentes)
-├── CMakeLists.txt      # Configuración del sistema de construcción
-└── LICENSE             # Apache License 2.0
+```cpp
+// In your state's init()
+m_data->textures.load("player", "assets/player.png");
+m_data->fonts.load("main", "assets/font.ttf");
+m_data->sounds.load("jump", "assets/jump.wav");
+
+// Later, retrieve them
+sf::Sprite player(m_data->textures.get("player"));
 ```
 
-## 3. Flujo de Ejecución Detallado
+## Architecture Overview
 
-1.  **Inicialización**: `main.cpp` instancia el objeto `Engine::Game` y registra el estado inicial a través de la máquina de estados.
-2.  **Procesamiento de Estados**: En cada iteración, el motor verifica si existen cambios de escena (push/pop/change).
-3.  **Entrada (Input)**: El estado activo captura los eventos de sistema y periféricos a través de `handleInput()`.
-4.  **Actualización (Update)**: Se ejecuta la lógica del controlador y el modelo utilizando un paso de tiempo fijo (`dt`).
-5.  **Renderizado (Draw)**: La vista dibuja los componentes en la ventana compartida del contexto global.
-
-## 4. Guía de Inicio y Construcción
-
-### 4.1 Requisitos
-*   Compilador compatible con C++17 (GCC 7+, Clang 5+, MSVC 2017+).
-*   CMake 3.28+.
-*   Este proyecto utiliza la estructura recomendada por [SFML/cmake-sfml-project](https://github.com/SFML/cmake-sfml-project/) para la gestión automática de dependencias.
-
-### 4.2 Compilación
-Siga estos comandos para construir el binario desde la terminal:
-
-```bash
-# 1. Crear directorio de compilación
-mkdir build && cd build
-
-# 2. Generar archivos de construcción
-cmake ..
-
-# 3. Compilar el proyecto
-make
-
-# 4. Ejecutar el videojuego
-./Revolution_Game
+```
+main.cpp
+  └── Engine::Game
+        ├── sf::RenderWindow       (SFML 3 window)
+        ├── StateMachine           (stack of States)
+        │     ├── State A          (e.g., MainMenu)
+        │     ├── State B          (e.g., Gameplay)
+        │     └── ...
+        └── Resource Managers
+              ├── TextureManager
+              ├── FontManager
+              └── SoundBufferManager
 ```
 
-## 5. Licencia
+**Game loop** (each frame):
+1. `processStateChanges()` -- apply pending push/pop.
+2. `handleInput()` -- poll SFML events + real-time input.
+3. `update(dt)` -- fixed-timestep logic (may run multiple times per frame).
+4. `draw(interpolation)` -- render with smoothing factor.
 
-Este software se distribuye bajo la **Apache License 2.0**. Esta licencia permite el uso comercial, la modificación y la distribución, garantizando al mismo tiempo la protección de patentes por parte de los contribuidores. Para más detalles, consulte el archivo `LICENSE`.
+## Design Principles
+
+| Principle | Application |
+|-----------|-------------|
+| **Single Responsibility** | Each class has one job: `Game` runs the loop, `StateMachine` manages transitions, `State` owns scene logic. |
+| **Open/Closed** | Add new states without modifying engine code. |
+| **Liskov Substitution** | Any `State` subclass works seamlessly in the `StateMachine`. |
+| **Interface Segregation** | `State` exposes only the methods the engine needs. |
+| **Dependency Inversion** | States depend on the abstract `State` interface, not concrete implementations. The engine is decoupled from game logic. |
+
+## License
+
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
