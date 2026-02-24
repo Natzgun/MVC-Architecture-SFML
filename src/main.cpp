@@ -1,13 +1,13 @@
-#include "Core/Game.hpp"
-#include "Example/DemoState.hpp"
+#include "Engine/Core/Application.hpp"
+#include "Example/DemoScene.hpp"
 #include <memory>
 
 int main() {
-    Engine::Game game(1280, 720, "SFML Game Template");
+    Engine::Application app(1280, 720, "SFML Game Template");
 
-    game.getContext()->machine->pushState(
-        std::make_unique<DemoState>(game.getContext()));
+    app.context().scenes.pushScene(
+        std::make_unique<DemoScene>(app.context()));
 
-    game.run();
+    app.run();
     return 0;
 }
