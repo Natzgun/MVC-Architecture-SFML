@@ -1,4 +1,4 @@
-#include "Game/Scenes/PauseScene.hpp"
+#include "Example/Scenes/PauseScene.hpp"
 
 PauseScene::PauseScene(Engine::Context& ctx)
     : m_ctx(ctx) {

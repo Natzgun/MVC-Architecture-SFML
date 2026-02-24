@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Game {
+namespace Example {
 
 /// A single animation: a sequence of texture sub-rectangles at a given speed.
 struct Animation {
@@ -78,4 +78,4 @@ private:
     bool m_finished = false;
 };
 
-} // namespace Game
+} // namespace Example

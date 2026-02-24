@@ -1,4 +1,4 @@
-#include "Game/Scenes/MenuScene.hpp"
+#include "Example/Scenes/MenuScene.hpp"
 #include "Example/DemoScene.hpp"
 #include <memory>
 

@@ -1,5 +1,5 @@
 #include "Engine/Core/Application.hpp"
-#include "Game/Scenes/MenuScene.hpp"
+#include "Example/Scenes/MenuScene.hpp"
 #include <memory>
 
 int main() {

@@ -4,7 +4,7 @@
 
 namespace Engine { class Renderer; }
 
-namespace Game {
+namespace Example {
 
 /// Base class for heads-up display overlays.
 ///
@@ -46,4 +46,4 @@ protected:
     bool m_visible = true;
 };
 
-} // namespace Game
+} // namespace Example

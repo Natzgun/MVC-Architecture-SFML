@@ -1,6 +1,6 @@
-#include "Game/UI/HUD.hpp"
+#include "Example/UI/HUD.hpp"
 
-namespace Game {
+namespace Example {
 
 void HUD::setVisible(bool visible) {
     m_visible = visible;
@@ -10,4 +10,4 @@ bool HUD::isVisible() const {
     return m_visible;
 }
 
-} // namespace Game
+} // namespace Example

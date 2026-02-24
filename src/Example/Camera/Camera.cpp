@@ -1,8 +1,8 @@
-#include "Game/Camera/Camera.hpp"
+#include "Example/Camera/Camera.hpp"
 #include "Engine/Graphics/Renderer.hpp"
 #include <algorithm>
 
-namespace Game {
+namespace Example {
 
 Camera::Camera(sf::Vector2f viewSize)
     : m_view(sf::FloatRect({0.f, 0.f}, viewSize))
@@ -79,4 +79,4 @@ void Camera::clampToBounds() {
     m_view.setCenter(center);
 }
 
-} // namespace Game
+} // namespace Example

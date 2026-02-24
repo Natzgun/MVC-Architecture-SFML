@@ -1,6 +1,6 @@
-#include "Game/Entities/Entity.hpp"
+#include "Example/Entities/Entity.hpp"
 
-namespace Game {
+namespace Example {
 
 Entity::Entity(sf::Vector2f position, sf::Vector2f size)
     : m_position(position), m_size(size) {
@@ -50,4 +50,4 @@ bool Entity::isAlive() const {
     return m_alive;
 }
 
-} // namespace Game
+} // namespace Example

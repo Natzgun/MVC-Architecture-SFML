@@ -4,7 +4,7 @@
 
 namespace Engine { class Renderer; }
 
-namespace Game {
+namespace Example {
 
 /// Base class for all game entities.
 ///
@@ -49,4 +49,4 @@ protected:
     bool m_alive = true;
 };
 
-} // namespace Game
+} // namespace Example

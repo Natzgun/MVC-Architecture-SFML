@@ -1,5 +1,5 @@
 #include "Example/DemoScene.hpp"
-#include "Game/Scenes/PauseScene.hpp"
+#include "Example/Scenes/PauseScene.hpp"
 #include <memory>
 
 DemoScene::DemoScene(Engine::Context& ctx)

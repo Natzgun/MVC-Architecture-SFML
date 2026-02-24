@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace Game {
+namespace Example {
 
 /// Result of a collision check between two AABBs.
 struct CollisionResult {
@@ -37,4 +37,4 @@ namespace Collision {
     bool contains(sf::Vector2f point, const sf::FloatRect& rect);
 
 } // namespace Collision
-} // namespace Game
+} // namespace Example

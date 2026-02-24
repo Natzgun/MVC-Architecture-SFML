@@ -1,6 +1,6 @@
-#include "Game/Animation/SpriteAnimator.hpp"
+#include "Example/Animation/SpriteAnimator.hpp"
 
-namespace Game {
+namespace Example {
 
 void SpriteAnimator::addAnimation(const std::string& name,
                                    const std::vector<sf::IntRect>& frames,
@@ -79,4 +79,4 @@ std::size_t SpriteAnimator::currentFrame() const {
     return m_frameIndex;
 }
 
-} // namespace Game
+} // namespace Example

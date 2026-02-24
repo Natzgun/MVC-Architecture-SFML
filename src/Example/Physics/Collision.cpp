@@ -1,8 +1,8 @@
-#include "Game/Physics/Collision.hpp"
+#include "Example/Physics/Collision.hpp"
 #include <algorithm>
 #include <cmath>
 
-namespace Game::Collision {
+namespace Example::Collision {
 
 CollisionResult checkAABB(const sf::FloatRect& a, const sf::FloatRect& b) {
     CollisionResult result;
@@ -50,4 +50,4 @@ bool contains(sf::Vector2f point, const sf::FloatRect& rect) {
     return rect.contains(point);
 }
 
-} // namespace Game::Collision
+} // namespace Example::Collision

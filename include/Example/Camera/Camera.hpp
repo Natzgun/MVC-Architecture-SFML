@@ -4,7 +4,7 @@
 
 namespace Engine { class Renderer; }
 
-namespace Game {
+namespace Example {
 
 /// 2D camera that follows a target position with optional smoothing and bounds.
 ///
@@ -71,4 +71,4 @@ private:
     void clampToBounds();
 };
 
-} // namespace Game
+} // namespace Example
