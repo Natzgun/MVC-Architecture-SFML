@@ -85,8 +85,8 @@ La organización de directorios sigue el estándar de la industria para separar 
 
 ### 4.1 Requisitos
 *   Compilador compatible con C++17 (GCC 7+, Clang 5+, MSVC 2017+).
-*   SFML 2.5 o superior (Graphics, Window, System, Audio, Network).
-*   CMake 3.25+.
+*   CMake 3.28+.
+*   Este proyecto utiliza la estructura recomendada por [SFML/cmake-sfml-project](https://github.com/SFML/cmake-sfml-project/) para la gestión automática de dependencias.
 
 ### 4.2 Compilación
 Siga estos comandos para construir el binario desde la terminal:
