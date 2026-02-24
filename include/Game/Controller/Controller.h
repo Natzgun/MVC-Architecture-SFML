@@ -5,9 +5,8 @@
 #ifndef REVOLUTION_GAME_CONTROLLER_H
 #define REVOLUTION_GAME_CONTROLLER_H
 
-
-#include "../View/View.h"
-#include "../Model/Model.h"
+#include "Game/View/View.h"
+#include "Game/Model/Model.h"
 #include <memory>
 
 class Controller {

@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "Controller/Controller.h"
+#include "Game/Controller/Controller.h"
 
 int main() {
   Controller controlador;

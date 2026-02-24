@@ -1,4 +1,4 @@
-#include "View.h"
+#include "Game/View/View.h"
 
 View::View() {
   int fps = 60;

@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "Game/Controller/Controller.h"
 
 Controller::Controller() {
   vista = std::make_unique<View>();

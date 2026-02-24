@@ -1,5 +1,4 @@
-
-#include "Model.h"
+#include "Game/Model/Model.h"
 #include <iostream>
 
 Model::Model() {
