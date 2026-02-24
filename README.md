@@ -20,7 +20,7 @@ A scalable, modular C++17 game engine template built on **SFML 3.0**. Clone this
 ```
 .
 ├── include/
-│   ├── Engine/
+│   ├── Engine/                     # Engine modules (DO NOT MODIFY)
 │   │   ├── Core/
 │   │   │   └── Application.hpp     # Entry point, game loop, Context struct
 │   │   ├── Input/
@@ -36,8 +36,21 @@ A scalable, modular C++17 game engine template built on **SFML 3.0**. Clone this
 │   │   │   └── EventBus.hpp        # Type-erased publish/subscribe system
 │   │   └── Assets/
 │   │       └── AssetManager.hpp    # Template-based resource cache
-│   └── Example/
-│       └── DemoScene.hpp           # Example scene (replace with your own)
+│   └── Example/                    # Reference code (copy, rename, make it yours)
+│       ├── DemoScene.hpp           # Movable circle demo scene
+│       ├── Entities/
+│       │   └── Entity.hpp          # Base class: position, velocity, bounds
+│       ├── Physics/
+│       │   └── Collision.hpp       # AABB collision detection & resolution
+│       ├── Animation/
+│       │   └── SpriteAnimator.hpp  # Frame-based sprite sheet animation
+│       ├── Camera/
+│       │   └── Camera.hpp          # 2D camera with smooth follow & bounds
+│       ├── UI/
+│       │   └── HUD.hpp             # Base class for screen-space UI overlays
+│       └── Scenes/
+│           ├── MenuScene.hpp       # Title screen (Start / Exit)
+│           └── PauseScene.hpp      # Pause overlay (Resume / Quit)
 ├── src/
 │   ├── Engine/
 │   │   ├── Core/Application.cpp
@@ -46,7 +59,15 @@ A scalable, modular C++17 game engine template built on **SFML 3.0**. Clone this
 │   │   ├── Audio/AudioManager.cpp
 │   │   └── Scene/SceneManager.cpp
 │   ├── Example/
-│   │   └── DemoScene.cpp           # Example scene (replace with your own)
+│   │   ├── DemoScene.cpp
+│   │   ├── Entities/Entity.cpp
+│   │   ├── Physics/Collision.cpp
+│   │   ├── Animation/SpriteAnimator.cpp
+│   │   ├── Camera/Camera.cpp
+│   │   ├── UI/HUD.cpp
+│   │   └── Scenes/
+│   │       ├── MenuScene.cpp
+│   │       └── PauseScene.cpp
 │   └── main.cpp                    # Entry point
 ├── assets/                         # Game assets (images, audio, fonts)
 ├── CMakeLists.txt
