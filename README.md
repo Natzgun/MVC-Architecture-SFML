@@ -1,14 +1,15 @@
-# SFML Engine Architecture - Professional Template
+# SFML Engine Architecture - Professional Game Template
 
-Este proyecto constituye una arquitectura base robusta para el desarrollo de videojuegos 2D utilizando la biblioteca SFML y C++17. Se fundamenta en patrones de diseño de alto nivel para garantizar la escalabilidad, el rendimiento y el desacoplamiento de componentes.
+Este repositorio proporciona una infraestructura técnica avanzada para el desarrollo de videojuegos 2D utilizando C++17 y la biblioteca SFML. La arquitectura ha sido diseñada bajo estándares de ingeniería de software profesionales, integrando patrones de diseño que aseguran un alto rendimiento, mantenibilidad y desacoplamiento.
 
-## 1. Arquitectura del Motor (Core)
+## 1. Arquitectura del Sistema
 
-El motor se articula en torno a tres componentes fundamentales que gestionan el ciclo de vida, los recursos y el flujo de la aplicación.
+El motor se divide en dos capas principales: el Núcleo (Core) y la Capa de Aplicación (Game).
 
-### 1.1 Game Loop (Fixed Time Step)
+### 1.1 Motor Base (Core)
 
-A diferencia de un bucle de juego simple, esta arquitectura implementa un **Fixed Time Step**. Esto asegura que la lógica del juego (física, colisiones) se ejecute a una frecuencia constante (60 Hz por defecto), independientemente de la tasa de refresco (FPS) del monitor.
+#### 1.1.1 Ciclo de Vida (Game Loop)
+Se implementa un bucle de tiempo fijo (Fixed Time Step). Esta técnica es estándar en la industria para garantizar que la lógica del juego y la física se ejecuten a una velocidad constante, evitando inconsistencias causadas por variaciones en la tasa de refresco (FPS).
 
 ```cpp
 void Game::run() {
@@ -26,7 +27,7 @@ void Game::run() {
             m_data->machine->getActiveState()->update(dt);
             accumulator -= dt;
         }
-        // Renderizado con interpolación
+        // Renderizado
         m_data->window->clear();
         m_data->machine->getActiveState()->draw(accumulator / dt);
         m_data->window->display();
@@ -34,84 +35,76 @@ void Game::run() {
 }
 ```
 
-### 1.2 State Machine (Gestión de Escenas)
+#### 1.1.2 Gestión de Estados (State Machine)
+La navegación entre escenas (Menú, Nivel, Pausa) se administra mediante una máquina de estados basada en una pila (Stack). Esto permite la superposición de contextos y una transición fluida entre pantallas sin pérdida de estado.
 
-La gestión de pantallas (Menú, Juego, Pausa) se realiza mediante una pila de estados. Esto permite superponer estados (como un menú de pausa sobre el juego activo) sin perder el contexto.
+#### 1.1.3 Gestión de Recursos (ResourceManager)
+Utiliza un sistema de caché basado en plantillas para centralizar la carga de activos (texturas, fuentes y audio), reduciendo el consumo de memoria y optimizando el acceso a los datos.
 
-*   `pushState`: Añade un estado sobre el actual.
-*   `changeState`: Reemplaza el estado activo.
-*   `popState`: Elimina el estado actual y resume el anterior.
+### 1.2 Implementación MVC y SOLID
 
-### 1.3 ResourceManager (Gestión de Memoria)
+Dentro de cada estado, las entidades siguen el patrón Model-View-Controller, reforzado por el principio de Inversión de Dependencias (DIP).
 
-Implementa una caché de recursos basada en plantillas para optimizar el uso de memoria. Los recursos (texturas, fuentes, sonidos) se cargan una única vez y se comparten mediante referencias.
-
-```cpp
-template <typename Resource>
-class ResourceManager {
-    std::unordered_map<std::string, std::unique_ptr<Resource>> m_resources;
-public:
-    void load(const std::string& id, const std::string& filename);
-    Resource& get(const std::string& id);
-};
-```
-
-## 2. Flujo de Ejecución
-
-El flujo de la aplicación sigue una jerarquía clara desde la inicialización hasta el cierre:
-
-1.  **Entry Point (`main.cpp`)**: Instancia la clase `Game` y define el estado inicial (`GameState`).
-2.  **Motor (`Game`)**: Configura la ventana y los sistemas de Core. Inicia el bucle principal.
-3.  **Gestión de Estados**: El `StateMachine` procesa los cambios pendientes antes de cada iteración del bucle.
-4.  **Ciclo de Estado**:
-    *   `handleInput()`: Captura eventos de SFML y entradas de teclado.
-    *   `update(dt)`: Actualiza la lógica de las entidades (MVC interno).
-    *   `draw(dt)`: Ejecuta el renderizado a través de la Vista.
-
-## 3. Implementación de Entidades (MVC & SOLID)
-
-Dentro de cada estado, las entidades se organizan siguiendo el patrón Model-View-Controller, aplicando Inversión de Dependencias (DIP) mediante interfaces.
-
-### 3.1 Desacoplamiento de la Vista (IView)
-
-El controlador no interactúa directamente con clases concretas de SFML, sino con una interfaz abstracta. Esto permite cambiar el backend de renderizado sin modificar la lógica de control.
+*   **Model**: Gestiona los datos y la lógica interna de la entidad.
+*   **View**: Implementa la interfaz `IView` para renderizar el estado del modelo.
+*   **Controller**: Recibe dependencias inyectadas para coordinar el flujo entre modelo y vista.
 
 ```cpp
-class IView {
-public:
-    virtual ~IView() = default;
-    virtual void drawEsfera(int radio, int x, int y) = 0;
-};
+// Ejemplo de Inyección de Dependencias en el Controlador
+Controller::Controller(Model* m, Game::IView* v) : modelo(m), vista(v) {}
 ```
 
-### 3.2 Inyección de Dependencias
+## 2. Estructura del Proyecto
 
-El ensamblaje de componentes se realiza en el método `init()` de cada estado, garantizando que el `Controller` reciba sus dependencias de forma externa:
+La organización de directorios sigue el estándar de la industria para separar las declaraciones de las implementaciones:
 
-```cpp
-void GameState::init() {
-    m_model = std::make_unique<Model>();
-    m_view = std::make_unique<View>(m_data);
-    m_controller = std::make_unique<Controller>(m_model.get(), m_view.get());
-}
+```text
+├── include/            # Cabeceras (.h / .hpp)
+│   ├── Core/           # Componentes base del motor
+│   ├── States/         # Máquina de estados y estados globales
+│   └── Game/           # Lógica de entidades (MVC e Interfaces)
+├── src/                # Implementaciones (.cpp)
+│   ├── Core/           # Lógica del motor y Game Loop
+│   ├── States/         # Lógica de transiciones de escenas
+│   ├── Game/           # Lógica de controladores, modelos y vistas
+│   └── main.cpp        # Punto de entrada de la aplicación
+├── assets/             # Recursos multimedia (imágenes, audio, fuentes)
+├── CMakeLists.txt      # Configuración del sistema de construcción
+└── LICENSE             # Apache License 2.0
 ```
 
-## 4. Instalación y Construcción
+## 3. Flujo de Ejecución Detallado
 
-El proyecto utiliza CMake como sistema de construcción, lo que facilita la gestión de dependencias y la compilación multiplataforma.
+1.  **Inicialización**: `main.cpp` instancia el objeto `Engine::Game` y registra el estado inicial a través de la máquina de estados.
+2.  **Procesamiento de Estados**: En cada iteración, el motor verifica si existen cambios de escena (push/pop/change).
+3.  **Entrada (Input)**: El estado activo captura los eventos de sistema y periféricos a través de `handleInput()`.
+4.  **Actualización (Update)**: Se ejecuta la lógica del controlador y el modelo utilizando un paso de tiempo fijo (`dt`).
+5.  **Renderizado (Draw)**: La vista dibuja los componentes en la ventana compartida del contexto global.
+
+## 4. Guía de Inicio y Construcción
+
+### 4.1 Requisitos
+*   Compilador compatible con C++17 (GCC 7+, Clang 5+, MSVC 2017+).
+*   SFML 2.5 o superior (Graphics, Window, System, Audio, Network).
+*   CMake 3.25+.
+
+### 4.2 Compilación
+Siga estos comandos para construir el binario desde la terminal:
 
 ```bash
-# Crear directorio de construcción
+# 1. Crear directorio de compilación
 mkdir build && cd build
 
-# Configurar y compilar
+# 2. Generar archivos de construcción
 cmake ..
+
+# 3. Compilar el proyecto
 make
 
-# Ejecutar el binario
+# 4. Ejecutar el videojuego
 ./Revolution_Game
 ```
 
 ## 5. Licencia
 
-Este proyecto se distribuye bajo la **Apache License 2.0**. Consulte el archivo `LICENSE` para obtener más detalles sobre los términos de uso, reproducción y distribución.
+Este software se distribuye bajo la **Apache License 2.0**. Esta licencia permite el uso comercial, la modificación y la distribución, garantizando al mismo tiempo la protección de patentes por parte de los contribuidores. Para más detalles, consulte el archivo `LICENSE`.
