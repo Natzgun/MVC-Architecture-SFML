@@ -1,4 +1,6 @@
 #include "Example/DemoScene.hpp"
+#include "Game/Scenes/PauseScene.hpp"
+#include <memory>
 
 DemoScene::DemoScene(Engine::Context& ctx)
     : m_ctx(ctx) {
@@ -25,9 +27,10 @@ void DemoScene::init() {
 }
 
 void DemoScene::handleInput([[maybe_unused]] float dt) {
-    // Check for quit via action mapping
+    // Check for pause via action mapping
     if (m_ctx.input.isActionPressed("quit")) {
-        m_ctx.renderer.close();
+        m_ctx.scenes.pushScene(
+            std::make_unique<PauseScene>(m_ctx), false);
         return;
     }
 

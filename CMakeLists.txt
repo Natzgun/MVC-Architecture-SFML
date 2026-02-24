@@ -13,7 +13,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-# --- Engine module sources ---
+# --- Engine module sources (DO NOT MODIFY) ---
 set(ENGINE_SOURCES
     src/Engine/Core/Application.cpp
     src/Engine/Graphics/Renderer.cpp
@@ -22,13 +22,24 @@ set(ENGINE_SOURCES
     src/Engine/Scene/SceneManager.cpp
 )
 
-# --- Example sources (replace these with your own game files) ---
+# --- Game framework sources ---
+set(GAME_FRAMEWORK_SOURCES
+    src/Game/Entities/Entity.cpp
+    src/Game/Physics/Collision.cpp
+    src/Game/Animation/SpriteAnimator.cpp
+    src/Game/Camera/Camera.cpp
+    src/Game/UI/HUD.cpp
+)
+
+# --- Game sources (ADD YOUR SCENES AND ENTITIES HERE) ---
 set(GAME_SOURCES
     src/main.cpp
     src/Example/DemoScene.cpp
+    src/Game/Scenes/MenuScene.cpp
+    src/Game/Scenes/PauseScene.cpp
 )
 
-add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${GAME_SOURCES})
+add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${GAME_FRAMEWORK_SOURCES} ${GAME_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
