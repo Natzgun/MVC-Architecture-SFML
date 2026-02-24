@@ -1,8 +1,6 @@
 #include "Game/Controller/Controller.h"
 
-Controller::Controller(Engine::GameDataRef data) {
-  vista = std::make_unique<View>(data);
-  modelo = std::make_unique<Model>();
+Controller::Controller(Model* m, Game::IView* v) : modelo(m), vista(v) {
 }
 
 void Controller::procesarEntrada() {

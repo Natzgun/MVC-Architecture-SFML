@@ -22,7 +22,10 @@ namespace Engine {
 
     private:
         GameDataRef m_data;
-        // El Controlador de tu MVC vive dentro de este estado específico
+        
+        // El estado ahora es el "dueño" de los componentes y los ensambla
+        std::unique_ptr<Model> m_model;
+        std::unique_ptr<View> m_view;
         std::unique_ptr<Controller> m_controller;
     };
 }

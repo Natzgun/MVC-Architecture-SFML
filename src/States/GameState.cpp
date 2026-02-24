@@ -5,8 +5,12 @@ namespace Engine {
     GameState::GameState(GameDataRef data) : m_data(data) {}
 
     void GameState::init() {
-        // Inicializamos el controlador pasándole el contexto global
-        m_controller = std::make_unique<Controller>(m_data);
+        // 1. Creamos las piezas
+        m_model = std::make_unique<Model>();
+        m_view = std::make_unique<View>(m_data);
+        
+        // 2. Las inyectamos en el controlador (Ensamblaje)
+        m_controller = std::make_unique<Controller>(m_model.get(), m_view.get());
     }
 
     void GameState::handleInput() {

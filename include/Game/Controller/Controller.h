@@ -5,20 +5,21 @@
 #ifndef REVOLUTION_GAME_CONTROLLER_H
 #define REVOLUTION_GAME_CONTROLLER_H
 
-#include "Game/View/View.h"
+#include "Game/View/IView.hpp"
 #include "Game/Model/Model.h"
 #include "Core/Game.hpp"
 #include <memory>
 
 class Controller {
 private:
-  std::unique_ptr<View> vista;
-  std::unique_ptr<Model> modelo;
+  // Dependemos de la interfaz IView, no de la clase View concreta (DIP)
+  Game::IView* vista;
+  Model* modelo;
 
 public:
-  explicit Controller(Engine::GameDataRef data);
+  // Inyección de dependencias por constructor
+  Controller(Model* m, Game::IView* v);
 
-  // Expuestos temporalmente para que el GameState pueda llamarlos.
   void procesarEntrada();
   void actualizar();
   void dibujar();
