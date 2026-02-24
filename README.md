@@ -211,6 +211,150 @@ m_ctx.sounds.load("jump", "assets/jump.wav");
 sf::Sprite player(m_ctx.textures.get("player"));
 ```
 
+## Project Organization by Game Type
+
+The template is intentionally minimal -- how you organize your game code depends on what you're building. Below are recommended structures for common game genres, all using simple inheritance (`Entity` base class with `update`/`draw`).
+
+### Platformer (e.g., Mario, Celeste)
+
+```
+include/Game/
+├── Scenes/
+│   ├── MenuScene.hpp
+│   ├── PlayScene.hpp
+│   └── GameOverScene.hpp
+├── Entities/
+│   ├── Entity.hpp            # Base class: position, velocity, update(), draw()
+│   ├── Player.hpp
+│   ├── Enemy.hpp
+│   └── Collectible.hpp
+├── Level/
+│   ├── Tilemap.hpp           # Load and render tile-based levels
+│   └── Camera.hpp            # Follow the player, clamp to level bounds
+└── Physics/
+    └── Collision.hpp         # AABB or tilemap collision detection
+```
+
+**Key decisions:**
+- One scene per level or one `PlayScene` that loads different level files.
+- A `Tilemap` class that reads a format like CSV or Tiled JSON.
+- Simple AABB collision -- no need for a physics engine in most platformers.
+- Camera that follows the player with optional smoothing.
+
+### Top-down RPG (e.g., Zelda, Stardew Valley)
+
+```
+include/Game/
+├── Scenes/
+│   ├── TitleScene.hpp
+│   ├── WorldScene.hpp
+│   ├── BattleScene.hpp       # If using separate battle screen
+│   └── DialogScene.hpp       # Push on top of WorldScene
+├── Entities/
+│   ├── Entity.hpp
+│   ├── Player.hpp
+│   ├── NPC.hpp
+│   └── Item.hpp
+├── World/
+│   ├── Tilemap.hpp
+│   ├── Camera.hpp
+│   └── MapLoader.hpp         # Load rooms/zones from files
+├── UI/
+│   ├── HUD.hpp               # Health bar, inventory display
+│   └── DialogBox.hpp
+└── Data/
+    └── GameData.hpp          # Stats, inventory, quest flags (serializable)
+```
+
+**Key decisions:**
+- `DialogScene` pushes on top of `WorldScene` (the scene stack handles pausing the world).
+- `GameData` holds all persistent state (player stats, inventory, quest progress) and is referenced by scenes via Context or passed explicitly.
+- NPCs use simple state logic (patrol, idle, talk) -- no need for complex AI.
+
+### Shoot 'em up / Bullet hell (e.g., Touhou, Ikaruga)
+
+```
+include/Game/
+├── Scenes/
+│   ├── MenuScene.hpp
+│   ├── StageScene.hpp
+│   └── ResultScene.hpp
+├── Entities/
+│   ├── Entity.hpp
+│   ├── Player.hpp
+│   ├── Enemy.hpp
+│   └── Bullet.hpp
+├── Spawners/
+│   ├── WaveManager.hpp       # Spawn enemy waves on a timeline
+│   └── BulletPattern.hpp     # Define patterns (spiral, spread, aimed)
+└── Systems/
+    └── CollisionGrid.hpp     # Spatial partitioning for many bullet-vs-entity checks
+```
+
+**Key decisions:**
+- Entity pooling is important -- hundreds of bullets per frame. Use `std::vector<Bullet>` with active/inactive flags instead of allocating/deallocating.
+- A spatial grid or simple brute-force with early-out can handle collision if entity counts stay under ~1000.
+- `WaveManager` reads a timeline (time → spawn function) to script each stage.
+
+### Puzzle game (e.g., Tetris, Match-3, Sokoban)
+
+```
+include/Game/
+├── Scenes/
+│   ├── MenuScene.hpp
+│   ├── PuzzleScene.hpp
+│   └── ResultScene.hpp
+├── Board/
+│   ├── Board.hpp             # Grid state, rules, win/lose detection
+│   ├── Piece.hpp             # Individual piece or cell
+│   └── BoardRenderer.hpp     # Draw the board state
+└── UI/
+    ├── ScoreDisplay.hpp
+    └── Timer.hpp
+```
+
+**Key decisions:**
+- The game logic lives in `Board`, completely separate from rendering. This makes it testable and clean.
+- `BoardRenderer` reads the board state and draws it -- the board itself knows nothing about SFML.
+- Input is simple (arrow keys, click) so direct key bindings in `PuzzleScene::handleInput` are enough.
+
+### Fighting game (e.g., Street Fighter, Smash Bros)
+
+```
+include/Game/
+├── Scenes/
+│   ├── CharacterSelectScene.hpp
+│   ├── FightScene.hpp
+│   └── ResultScene.hpp
+├── Entities/
+│   ├── Fighter.hpp           # Base: hitboxes, hurtboxes, state machine
+│   └── Projectile.hpp
+├── Combat/
+│   ├── FighterState.hpp      # Idle, Walking, Jumping, Attacking, Hitstun...
+│   ├── Hitbox.hpp
+│   └── ComboSystem.hpp       # Track input sequences for special moves
+└── Animation/
+    └── SpriteAnimator.hpp    # Frame-based sprite sheet animation
+```
+
+**Key decisions:**
+- Each fighter has its own **state machine** (not scenes -- these are entity states like Idle, Attack, Hitstun).
+- Hitbox/hurtbox system with frame data is central to fighting games.
+- `ComboSystem` buffers recent inputs and matches them against move lists.
+- Frame-based animation is critical -- use a `SpriteAnimator` that advances frames at fixed intervals.
+
+### General recommendations
+
+| Concern | Recommendation |
+|---------|---------------|
+| **Entity base class** | Start with a simple `Entity` with `virtual update(float dt)` and `virtual draw(Renderer&)`. Add what you need later. |
+| **When to split files** | One class per header/source pair. If a file exceeds ~300 lines, it probably has two responsibilities. |
+| **Scene count** | At minimum: one menu scene, one gameplay scene. Add more as needed (pause, settings, game over). |
+| **Folder depth** | Two levels max (`Game/Entities/`, `Game/Scenes/`). Deep nesting adds friction with no benefit. |
+| **Game state / save data** | Keep it in a plain struct. Scenes read/write to it. Serialize it for save files. |
+| **When to consider ECS** | If you have hundreds of entities with mix-and-match behaviors (e.g., sandbox, RTS). For most 2D games, inheritance is simpler and sufficient. |
+| **Physics** | For most 2D games, hand-written AABB collision is enough. Only bring in Box2D if you need realistic rigid body physics. |
+
 ## Architecture Overview
 
 ```
