@@ -89,6 +89,20 @@ A scalable, modular C++17 game engine template built on **SFML 3.0**. Clone this
       libfreetype-dev libflac-dev libvorbis-dev \
       libgl1-mesa-dev libegl1-mesa-dev
   ```
+- Fedora (Tested in 43)
+  ```bash
+  sudo dnf install \
+          libXrandr-devel \
+          libXcursor-devel \
+          libXi-devel \
+          systemd-devel \
+          freetype-devel \
+          flac-devel \
+          libvorbis-devel \
+          mesa-libGL-devel \
+          mesa-libEGL-devel
+  ```
+  
 
 ### Build & Run
 
